@@ -10,7 +10,7 @@ const getDotEnvFilePath = () => {
   }
 
   if (/test/.test(nodeEnv)) {
-    return "env.testing"
+    return ".env.testing"
   }
   if (/dev/.test(nodeEnv)) {
     return ".env"
