@@ -23,6 +23,7 @@ describe("find recipes use case test suite", () => {
     ]
 
     for (const { input, expected } of testCases) {
+      jest.clearAllMocks()
       mem.clear(findRecipes)
 
       mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(expected)
