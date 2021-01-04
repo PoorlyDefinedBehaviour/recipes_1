@@ -1,4 +1,4 @@
-export type Recipe = {
+export default interface Recipe {
   title: string
   ingredients: string
   link: string
