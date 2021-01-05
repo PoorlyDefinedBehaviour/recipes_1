@@ -1,6 +1,5 @@
 export default interface Recipe {
   title: string
-  ingredients: string
+  ingredients: string[]
   link: string
-  gif: string
 }
