@@ -1,6 +1,6 @@
 import got from "got"
 
-type Query = Record<string, string | number>
+type Query = Record<string, string | number | undefined>
 
 const toQueryString = (query?: Query) => {
   if (!query) {
@@ -10,7 +10,7 @@ const toQueryString = (query?: Query) => {
   return Object.entries(query)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`
     )
     .join("&")
 }
