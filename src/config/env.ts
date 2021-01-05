@@ -10,7 +10,7 @@ const getDotEnvFilePath = () => {
   }
 
   if (/test/.test(nodeEnv)) {
-    return "env.testing"
+    return ".env.testing"
   }
   if (/dev/.test(nodeEnv)) {
     return ".env"
@@ -40,7 +40,7 @@ const get = (key: string): string => {
   return value
 }
 
-const keys = ["NODE_ENV", "RECIPE_API_URL"] as const
+const keys = ["NODE_ENV", "RECIPE_API_URL", "GIF_API_URL"] as const
 
 export const env = Object.fromEntries(keys.map(key => [key, get(key)])) as {
   [key in typeof keys[number]]: string
