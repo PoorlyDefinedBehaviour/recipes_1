@@ -1,80 +1,89 @@
-import { left, right } from "fp-ts/Either"
+import { isRight, right, Right } from "fp-ts/Either"
+import faker from "faker"
 import mem from "mem"
-import findRecipes from "./find_recipes"
+import makeFindRecipes from "./find_recipes"
+import Recipe from "../entities/recipe"
 
 const mockRecipeRepository = {
   findRecipesByKeywords: jest.fn(),
+}
+const mockGifRepository = {
+  findGifByText: jest.fn(),
+}
+
+const findRecipes = makeFindRecipes({
+  recipeRepository: mockRecipeRepository,
+  gifRepository: mockGifRepository,
+})
+
+const mockRecipe = {
+  title: "Greek Omelet with Feta",
+  ingredients: [
+    "eggs",
+    "feta cheese",
+    "garlic",
+    "red onions",
+    "spinach",
+    "tomato",
+    "water",
+  ],
+  link: "http://www.kraftfoods.com/kf/recipes/greek-omelet-feta-104508.aspx",
 }
 
 beforeEach(() => jest.clearAllMocks())
 
 describe("find recipes use case test suite", () => {
-  test("should fetch recipes from the provided recipe repository", async () => {
-    const testCases = [
-      { input: ["onion", "tomato"], expected: right([]) },
-      { input: [], expected: right([]) },
-      { input: ["potato"], expected: right([]) },
-      {
-        input: ["potato"],
-        expected: left({
-          message: "It was not possible to fetch recipes, try again later.",
-        }),
-      },
-    ]
+  test("should return a list of recipes with gifs based on the provided keywords", async () => {
+    const recipes = [mockRecipe]
 
-    for (const { input, expected } of testCases) {
-      jest.clearAllMocks()
-      mem.clear(findRecipes)
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(
+      right(recipes)
+    )
 
-      mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(expected)
-
-      const recipes = await findRecipes(
-        {
-          recipeRepository: mockRecipeRepository,
-        },
-        input
-      )
-
-      expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalled()
-
-      expect(recipes).toEqual(expected)
+    const gif = {
+      url: faker.internet.url(),
     }
+
+    mockGifRepository.findGifByText.mockResolvedValueOnce(right(gif))
+
+    const expected = recipes.map(recipe => ({ ...recipe, gif: gif.url }))
+
+    const recipesWithGifs = await findRecipes(["onion", "tomato"])
+
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalled()
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(
+      recipes.length
+    )
+
+    expect(isRight(recipesWithGifs)).toBe(true)
+
+    expect((recipesWithGifs as Right<Recipe[]>).right).toEqual(expected)
   })
 
-  test("if recipes for the provided keywords are in the cache, should not use the recipe repository and return cached values", async () => {
-    const testCases = [
-      {
-        input: ["onion", "tomato"],
-        expected: () =>
-          expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalled(),
-      },
-      {
-        input: ["onion", "tomato"],
-        expected: () =>
-          expect(
-            mockRecipeRepository.findRecipesByKeywords
-          ).not.toHaveBeenCalled(),
-      },
-      {
-        input: ["potato", "apple"],
-        expected: () =>
-          expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalled(),
-      },
-    ]
+  test("if recipes for the provided keywords are in the cache, should return cached values", async () => {
+    jest.clearAllMocks()
+    mem.clear(findRecipes)
 
-    for (const { input, expected } of testCases) {
-      jest.clearAllMocks()
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(
+      right([mockRecipe])
+    )
 
-      mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce([])
+    mockGifRepository.findGifByText.mockResolvedValueOnce(
+      right({
+        url: faker.internet.url(),
+      })
+    )
 
-      await findRecipes(
-        {
-          recipeRepository: mockRecipeRepository,
-        },
-        input
-      )
+    await findRecipes(["onion", "tomato"])
 
-      expected()
-    }
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(1)
+
+    expect(mockGifRepository.findGifByText).toHaveBeenCalledTimes(1)
+
+    await findRecipes(["onion", "tomato"])
+
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(1)
+
+    expect(mockGifRepository.findGifByText).toHaveBeenCalledTimes(1)
   })
 })
