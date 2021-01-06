@@ -1,4 +1,4 @@
-import { isRight, right, Right } from "fp-ts/Either"
+import { isLeft, isRight, left, right, Right } from "fp-ts/Either"
 import faker from "faker"
 import mem from "mem"
 import makeFindRecipes from "./find_recipes"
@@ -36,15 +36,13 @@ describe("find recipes use case test suite", () => {
   test("should return a list of recipes with gifs based on the provided keywords", async () => {
     const recipes = [mockRecipe]
 
-    mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(
-      right(recipes)
-    )
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValue(right(recipes))
 
     const gif = {
       url: faker.internet.url(),
     }
 
-    mockGifRepository.findGifByText.mockResolvedValueOnce(right(gif))
+    mockGifRepository.findGifByText.mockResolvedValue(right(gif))
 
     const expected = recipes.map(recipe => ({ ...recipe, gif: gif.url }))
 
@@ -64,11 +62,11 @@ describe("find recipes use case test suite", () => {
     jest.clearAllMocks()
     mem.clear(findRecipes)
 
-    mockRecipeRepository.findRecipesByKeywords.mockResolvedValueOnce(
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValue(
       right([mockRecipe])
     )
 
-    mockGifRepository.findGifByText.mockResolvedValueOnce(
+    mockGifRepository.findGifByText.mockResolvedValue(
       right({
         url: faker.internet.url(),
       })
@@ -85,5 +83,57 @@ describe("find recipes use case test suite", () => {
     expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(1)
 
     expect(mockGifRepository.findGifByText).toHaveBeenCalledTimes(1)
+  })
+
+  test("if recipes cant be found, should return Either.left(Failure)", async () => {
+    jest.clearAllMocks()
+    mem.clear(findRecipes)
+
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValue(
+      left(new Error("oops"))
+    )
+
+    mockGifRepository.findGifByText.mockResolvedValue(
+      right({
+        url: faker.internet.url(),
+      })
+    )
+
+    const result = await findRecipes(["onion", "tomato"])
+
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(1)
+
+    expect(mockGifRepository.findGifByText).not.toHaveBeenCalled()
+
+    expect(isLeft(result)).toBe(true)
+
+    expect(result).toEqual(
+      left({
+        message: "couldn't fetch recipes, try again later",
+      })
+    )
+  })
+
+  test("if recipe gifs cant be found, should return Either.left(Failure)", async () => {
+    jest.clearAllMocks()
+    mem.clear(findRecipes)
+
+    mockRecipeRepository.findRecipesByKeywords.mockResolvedValue(
+      right([mockRecipe])
+    )
+
+    mockGifRepository.findGifByText.mockResolvedValue(left(new Error("oops")))
+
+    const result = await findRecipes(["onion", "tomato"])
+
+    expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(1)
+
+    expect(mockGifRepository.findGifByText).toHaveBeenCalledTimes(1)
+
+    expect(isLeft(result)).toBe(true)
+
+    expect(result).toEqual(
+      left({ message: "couldn't fetch gifs, try again later" })
+    )
   })
 })
