@@ -13,21 +13,19 @@ interface PaginatedResponse<T> {
   }
 }
 
-export const findGifsByText = async (
+export const findGifByText = async (
   text: string
-): Promise<Either<Error, Gif[]>> => {
+): Promise<Either<Error, Gif>> => {
   try {
     const { data } = await http.get<PaginatedResponse<Gif>>(
       `${env.GIF_API_URL}/gifs/search`,
       {
-        query: { q: text },
+        query: { q: text, rating: "pg-13", limit: 1 },
         retries: 3,
       }
     )
 
-    const gifs = data.map(gif => ({ url: gif.url }))
-
-    return right(gifs)
+    return right({ url: data[0].url })
   } catch (error) {
     return left(error)
   }
