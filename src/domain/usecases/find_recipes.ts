@@ -6,12 +6,7 @@ import { Failure } from "../contracts/failure"
 import { GifRepository } from "../repositories/gif_repository"
 import Gif from "../entities/gif"
 import { unreachable } from "../../utils"
-
-type RecipeRepository = {
-  findRecipesByKeywords: (
-    keywords: string[]
-  ) => Promise<Either<Error, Recipe[]>>
-}
+import { RecipeRepository } from "../repositories/recipe_repository"
 
 type Dependencies = {
   recipeRepository: RecipeRepository
