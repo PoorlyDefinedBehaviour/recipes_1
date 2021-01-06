@@ -40,3 +40,11 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Push to dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: poorlydefinedbehaviour/recipes_1
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
