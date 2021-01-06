@@ -35,13 +35,14 @@ const findGifsForRecipes = async (
     return left(new Error("couldn't get gifs for all recipes"))
   }
 
-  const t = gifs.map(
-    fold(
-      _error => unreachable(),
-      x => x
+  return right(
+    gifs.map(
+      fold(
+        _error => unreachable(),
+        x => x
+      )
     )
   )
-  return right(t)
 }
 
 export default ({ recipeRepository, gifRepository }: Dependencies) => {
