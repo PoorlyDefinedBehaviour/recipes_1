@@ -40,7 +40,12 @@ const get = (key: string): string => {
   return value
 }
 
-const keys = ["NODE_ENV", "RECIPE_API_URL", "GIF_API_URL"] as const
+const keys = [
+  "NODE_ENV",
+  "RECIPE_API_URL",
+  "GIF_API_URL",
+  "GIF_API_KEY",
+] as const
 
 type EnvValues = {
   [key in typeof keys[number]]: string
