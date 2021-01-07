@@ -17,10 +17,22 @@ export const findGifByText = async (
   text: string
 ): Promise<Either<Error, Gif>> => {
   try {
+    // this is only here in case giphy key is not working again
+    if (process.env.DEBUG) {
+      return right({
+        url: "https://media.giphy.com/media/xBRhcST67lI2c/giphy.gif",
+      })
+    }
+
     const { data } = await http.get<PaginatedResponse<Gif>>(
       `${env.GIF_API_URL}/gifs/search`,
       {
-        query: { q: text, rating: "pg-13", limit: 1 },
+        query: {
+          q: text,
+          api_key: env.GIF_API_KEY,
+          rating: "pg-13",
+          limit: 1,
+        },
         retries: 3,
       }
     )
