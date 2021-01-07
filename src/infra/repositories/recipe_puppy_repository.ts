@@ -18,6 +18,8 @@ interface RecipePuppyResponse {
 const sortAlphabetically = (array: string[]): string[] =>
   array.slice().sort((a, b) => a.localeCompare(b))
 
+const toArray = (value: string): string[] => value.replace(/ /g, "").split(",")
+
 export const findRecipesByKeywords = async (
   keywords: string[],
   options?: { page?: number; query?: string }
@@ -33,7 +35,7 @@ export const findRecipesByKeywords = async (
 
     const recipes = results.map(result => ({
       title: result.title,
-      ingredients: sortAlphabetically(result.ingredients.split(", ")),
+      ingredients: sortAlphabetically(toArray(result.ingredients)),
       link: result.href,
     }))
 
