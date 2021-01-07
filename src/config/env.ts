@@ -16,23 +16,17 @@ const getDotEnvFilePath = () => {
     return ".env"
   }
   if (/prod/.test(nodeEnv)) {
-    // get env variables from somewhere else, like hashicorp vault?
+    // get env variables from somewhere else, like hashicorp vault instead?
     return ".env"
   }
 
   throw new Error(`Unexpected NODE_ENV: ${nodeEnv}`)
 }
 
-const dotEnvFilePath = getDotEnvFilePath()
-
-const { parsed } = dotenv.config({ path: dotEnvFilePath })
-
-if (!parsed) {
-  throw new Error(`failed to parsed env file: ${dotEnvFilePath}`)
-}
+dotenv.config({ path: getDotEnvFilePath() })
 
 const get = (key: string): string => {
-  const value = parsed[key]
+  const value = process.env[key]
 
   if (!value) {
     throw new Error(`missing env key: ${key}`)
