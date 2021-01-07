@@ -54,7 +54,7 @@ describe("recipe puppy repository unit test suite", () => {
               title: "Vegetable-Pasta Oven Omelet",
               href:
                 "http://find.myrecipes.com/recipes/recipefinder.dyn?action=displayRecipe&recipe_id=520763",
-              ingredients: "c,b,   a",
+              ingredients: "c, b, a",
               thumbnail: "http://img.recipepuppy.com/560556.jpg",
             },
           ],
