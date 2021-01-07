@@ -42,6 +42,7 @@ const get = (key: string): string => {
 
 const keys = [
   "NODE_ENV",
+  "PORT",
   "RECIPE_API_URL",
   "GIF_API_URL",
   "GIF_API_KEY",
