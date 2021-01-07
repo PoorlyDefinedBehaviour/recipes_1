@@ -8,6 +8,7 @@ const toQueryString = (query?: Query) => {
   }
 
   return Object.entries(query)
+    .filter(([_key, value]) => value !== undefined)
     .map(
       ([key, value]) =>
         `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`
