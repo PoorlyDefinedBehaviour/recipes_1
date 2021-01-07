@@ -136,4 +136,33 @@ describe("find recipes use case test suite", () => {
       left({ message: "couldn't fetch gifs, try again later" })
     )
   })
+
+  test("if 0 keywords or more than 3 keywords are provided, should return an error", async () => {
+    jest.clearAllMocks()
+    mem.clear(findRecipes)
+
+    const testCases = [
+      { input: undefined, expected: "at least 1 ingredient must be informed" },
+      { input: null, expected: "at least 1 ingredient must be informed" },
+      { input: [], expected: "at least 1 ingredient must be informed" },
+      {
+        input: ["onion", "tomato", "potato", "apple", "watermelon"],
+        expected: "inform 3 ingredients maximum",
+      },
+    ]
+
+    for (const { input, expected } of testCases) {
+      const result = await findRecipes(input as string[])
+
+      expect(mockRecipeRepository.findRecipesByKeywords).toHaveBeenCalledTimes(
+        0
+      )
+
+      expect(mockGifRepository.findGifByText).toHaveBeenCalledTimes(0)
+
+      expect(isLeft(result)).toBe(true)
+
+      expect(result).toEqual(left({ message: expected }))
+    }
+  })
 })

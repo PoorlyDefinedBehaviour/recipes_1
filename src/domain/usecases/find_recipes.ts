@@ -49,6 +49,14 @@ export default ({ recipeRepository, gifRepository }: Dependencies) => {
   const findRecipes = async (
     keywords: string[]
   ): Promise<Either<Failure, RecipeWithGif[]>> => {
+    if (!keywords || keywords.length === 0) {
+      return left({ message: "at least 1 ingredient must be informed" })
+    }
+
+    if (keywords.length > 3) {
+      return left({ message: "inform 3 ingredients maximum" })
+    }
+
     const recipes = await recipeRepository.findRecipesByKeywords(keywords)
     if (isLeft(recipes)) {
       return left({ message: "couldn't fetch recipes, try again later" })
@@ -66,6 +74,6 @@ export default ({ recipeRepository, gifRepository }: Dependencies) => {
 
   return mem(findRecipes, {
     maxAge: FIVE_SECONDS,
-    cacheKey: ([keywords]) => keywords.join(","),
+    cacheKey: JSON.stringify,
   })
 }
