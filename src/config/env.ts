@@ -42,6 +42,23 @@ const get = (key: string): string => {
 
 const keys = ["NODE_ENV", "RECIPE_API_URL", "GIF_API_URL"] as const
 
-export const env = Object.fromEntries(keys.map(key => [key, get(key)])) as {
+type EnvValues = {
   [key in typeof keys[number]]: string
+}
+
+type Environment = {
+  isProduction: boolean
+  isDevelopment: boolean
+  isTesting: boolean
+}
+
+const values = Object.fromEntries(keys.map(key => [key, get(key)])) as EnvValues
+
+type Env = EnvValues & Environment
+
+export const env: Env = {
+  ...values,
+  isProduction: /prod/.test(values.NODE_ENV),
+  isDevelopment: /dev/.test(values.NODE_ENV),
+  isTesting: /test/.test(values.NODE_ENV),
 }
