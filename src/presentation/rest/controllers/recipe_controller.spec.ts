@@ -38,13 +38,13 @@ describe("recipe controller integration test suite", () => {
         {
           title: "something with potatos",
           href: faker.internet.url(),
-          ingredients: "potato,rice,beans",
+          ingredients: "potato, rice, beans",
           thumbnail: faker.image.food(),
         },
         {
           title: "something with onions",
           href: faker.internet.url(),
-          ingredients: "onions,cheese,chicken",
+          ingredients: "onions, cheese, chicken",
           thumbnail: faker.image.food(),
         },
       ]
