@@ -1,13 +1,11 @@
 **How to run**
 
 **With docker image** </br>
-1- Run 
 ```
-docker pull poorlydefinedbehaviour/recipes_1
+$ docker pull poorlydefinedbehaviour/recipes_1
 ```
-2- Run 
 ```
-docker run \
+$ docker run \
   -e PORT=7676 \
   -e RECIPE_API_URL=http://www.recipepuppy.com/api \
   -e GIF_API_URL=http://api.giphy.com/v1 \
@@ -19,13 +17,13 @@ docker run \
 </br>
 
 **If your giphy api key is not working** </br>
-1- Run 
+
 ```
-docker pull poorlydefinedbehaviour/recipes_1
+$ docker pull poorlydefinedbehaviour/recipes_1
 ```
-2- Run 
+
 ```
-docker run \ 
+$ docker run \ 
   -e PORT=7676 \
   -e RECIPE_API_URL=http://www.recipepuppy.com/api \
   -e GIF_API_URL=http://api.giphy.com/v1 \
@@ -38,15 +36,16 @@ docker run \
 </br>
 
 **With .env file** </br>
-1- Copy `.env.testing` to a file called `.env` and replace the values</br>
-2- Run `yarn start` or `npm start` </br>
+Copy `.env.testing` to a file called `.env` and replace the values</br>
+```
+$ yarn start
+```
 
 </br>
 
 **Running tests** </br>
-1- Run
 ```
-yarn test or npm test
+$ yarn test 
 ```
 
 Some tests may take long to execute because of the retry strategy.
